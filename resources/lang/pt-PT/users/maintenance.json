@@ -1,0 +1,16 @@
+{
+    "new-user": "Novo utilizador",
+    "edit-user": "Editar utilizador",
+    "change-password": "Alterar password",
+    "new-password": "Nova password",
+    "confirm-password": "Confirmar password",
+    "block-user": "Bloquear utilizador",
+    "unblock-user": "Desbloquear utilizador",
+    "change-password-on-next-login": "Alterar password no próximo login",
+
+    "invalid-email-address": "Endereço de email inválido",
+    "username-must-have-at-least-5-characters": "Utilizador deve ter pelo menos 5 caracteres",
+    "password-must-have-at-least-5-characters": "Password deve ter pelo menos 5 caracteres",
+    "passwords-do-not-match": "As passwords não coincidem",
+    "new-user-success": "Novo utilizador criado com sucesso"
+}

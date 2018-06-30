@@ -1,0 +1,9 @@
+{
+    "user": "Utilizador|Utilizadores",
+    "name": "Nome",
+    "email": "Email",
+    "username": "Utilizador",
+    "tenant": "Agência|Agências",
+    "password": "Password",
+    "last-login": "Último login"
+}

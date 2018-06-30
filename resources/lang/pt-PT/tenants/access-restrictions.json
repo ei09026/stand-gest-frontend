@@ -1,0 +1,10 @@
+{
+    "ip-restrictions": "Restrições por IP",
+    "ips": "IPs",
+    "new-ip-pattern": "Novo padrão de IP",
+    "no-ip-restrictions": "Nenhuma restrição por IP",
+    "invalid-ip-pattern": "Padrão de IP inválido",
+    "ip-restriction-active": "Restrições de IP ativas",
+    "ip-restriction-inactive": "Restrições de IP inativas",
+    "only-host-ips": "Apenas IPs de máquinas"
+}

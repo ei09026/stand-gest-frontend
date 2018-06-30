@@ -1,0 +1,14 @@
+{
+    "id": "Nº de registo",
+    "state": "Estado",
+    "date": "Data de registo",
+    "sessions": "Sessões",
+    "goto-session": "Ver detalhe",
+    "edit-session": "Editar sessão",
+    "actions": "Ações",
+    "waiting-for-validation": "Aguarde validação",
+    "validated": "Validado",
+    "success-document-validation": "Documento validado com sucesso.",
+    "send-document": "Enviar Documento",
+    "client-session-closed": "Cliente finalizou a sessão"
+}

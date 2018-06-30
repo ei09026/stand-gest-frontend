@@ -1,0 +1,5 @@
+{
+    "new-role": "Novo cargo",
+    "deleting-this-role-will-affect-all-associated-permissions-in-all-tenants": "A remoção deste cargo irá afetar todas as permissões associadas em todas as agências.",
+    "error-occurred-when-saving-role": "Ocorreu um erro ao gravar o cargo."
+}

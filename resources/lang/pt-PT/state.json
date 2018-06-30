@@ -1,0 +1,7 @@
+{
+    "allow": "Permitido",
+    "deny": "Negado",
+    "on": "Ligado",
+    "off": "Desligado",
+    "blocked": "Bloqueado"
+}

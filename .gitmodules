@@ -1,0 +1,6 @@
+[submodule "src/services/shared"]
+	path = src/services/shared
+	url = ../shared-js-services.git
+[submodule "src/components/shared"]
+	path = src/components/shared
+	url = ../shared-v-components.git

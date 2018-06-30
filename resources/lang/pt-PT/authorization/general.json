@@ -1,0 +1,9 @@
+{
+    "roles": "Cargos",
+    "claims": "Permissões",
+    "role-claims": "Permissões de cargos",
+    "please-select-a-role": "Por favor selecione um cargo.",
+    "ungrouped": "Desagrupadas",
+    "there-are-no-claims-in-this-group": "Não existem permissões neste grupo.",
+    "there-are-no-tenants": "Não existem agências."
+}

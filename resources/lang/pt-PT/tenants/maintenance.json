@@ -1,0 +1,7 @@
+{
+    "new-tenant": "Nova agencia",
+    "edit-tenant": "Editar agencia",
+    "erp-tenant-id": "ID Agência (ERP)",
+    "name-must-have-at-least-3-characters": "Nome deve ter pelo menos 3 caracteres",
+    "erp-tenant-id-must-have-at-least-12-characters": "ID Agência (ERP) deve ter pelo menos 12 caracteres e ser único"
+}

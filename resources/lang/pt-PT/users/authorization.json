@@ -1,0 +1,12 @@
+{
+    "authorization": "Autorização",
+    "user-has-no-related-tenants": "O utilizador não tem agências relacionadas",
+    "role": "Cargo|Cargos",
+    "claim": "Permissão|Permissões",
+    "override-roles": "Sobrepor aos cargos",
+    "off-dont-override-roles": "Desligado. Não sobrepor aos cargos.",
+    "claim-obtained-from-these-roles": "Permissão obtida através destes cargos:",
+    "no-active-claims": "Nenhuma permissão ativa.",
+    "no-inactive-claims": "Nenhuma permissão inativa.",
+    "no-roles": "Não existem cargos."
+}
