@@ -16,72 +16,9 @@
             </div>
         </div>
 
-        <ul class="nav navbar-top-links navbar-right">
-            <li
-                v-if="startSessionVisible">
-
-                <a href="#"
-                    :class="{
-                        'disabled-link' : !canConnect
-                    }"
-                    @click.prevent="startSession()">
-
-                    <i class="fas fa-rss"></i>
-
-                    {{ $t('authentication.start-session') }}
-                </a>
-            </li>
-
-            <li
-                v-if="finalizeReopenSessionVisible">
-
-                <a href="#"
-                    :class="{
-                        'disabled-link': !finalizeReopenSessionVisible
-                    }"
-                    @click.prevent="finalizeReopenedSession()">
-
-                    <i class="fas fa-rss"></i>
-
-                    {{ $t('authentication.finalize-reopen-session') }}
-                </a>
-            </li>
-
-            <li
-                v-if="clientSessionStarted && validationErrors.length === 0">
-
-                <a href="#"
-                    :class="{
-                        'disabled-link': !canCloseSession
-                    }" @click.prevent="closeSession()">
-
-                    <i class="fas fa-rss"></i>
-
-                    {{ $t('authentication.end-session') }}
-                </a>
-            </li>
-
-            <li
-                v-if="clientSessionStarted && validationErrors.length > 0"
-                    v-tooltip="invalidReasonsTooltip">
-
-                <a href="#"
-                    :class="{
-                        'disabled-link': !canCloseSession
-                    }">
-
-                    <i class="fas fa-rss"></i>
-
-                    {{ $t('authentication.end-session') }}
-
-                    <i class="fa fa-exclamation-triangle"></i>
-                </a>
-            </li>
-
+        <ul class="nav navbar-top-links navbar-right">                               
             <li>
                 <a href="#"
-                    :class="{'disabled-link': clientSessionStarted}"
-                    v-if="tenant != null"
                     @click.prevent="logout()">
 
                     <i class="fa fa-sign-out-alt"></i>
@@ -95,9 +32,7 @@
 
 <script>
     import authService from '@/services/shared/auth.service'
-    import sessionsService from '@/services/sessions/session.service'
     import alertService from '@/services/shared/alert.service'
-    import siganlR from '@/services/signalr/signalr.service'
     import eventHub from '@/services/shared/events.service'
     import toastrService from '@/services/shared/toastr.service'
     import tooltip from '@/directives/tooltip'
@@ -111,9 +46,6 @@
 
         data () {
             return {
-                tenant: null,
-                commandHub: siganlR.hubs.command,
-                editSession: false
             }
         },
 
@@ -264,39 +196,18 @@
             },
 
             goHome () {
-                this.$router.push('/sessions')
+                this.$router.push('/')
             }
         },
 
-        watch: {
-            clientSessionStarted (newValue, oldValue) {
-                if (!_.isNil(newValue) && this.clientSessionStarted) {
-                    this.$router.push('/new-session/')
-                }
-            },
-
-            '$route' (to, from) {
-                if (to.path.startsWith('/edit-session/')) {
-                    this.editSession = true
-                } else {
-                    this.editSession = false
-                }
-            }
+        watch: {            
         },
 
         created () {
-            this.tenant = authService.getTenant()
-
-            // this.commandHub.checkOnGoingSession()
-
-            this.bindCommandHubEvents()
-
-            eventHub.$on('client-session-closed', this.clientSessionClosed)
         },
 
 
         beforeDestroy () {
-            eventHub.$off('client-session-closed', this.clientSessionClosed)
         },
     }
 

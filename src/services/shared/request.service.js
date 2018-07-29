@@ -56,17 +56,29 @@ let requestService = {
         return Vue.axios.post(endpoint, body)
     },
 
-    retrieve (endpoint, parameters) {
-        let body = Object.assign({
-            token: localStorage.getItem('token'),
-            method: 'retrieve'
-        }, parameters)
+    get (endpoint, parameters) {
+        return Vue.axios.get(endpoint,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                params: parameters,
+                cancelToken: parameters.cancelToken ? parameters.cancelToken.token : null
+            }
+        )
+    },
 
-        if (parameters && parameters.cancelToken) {
-            return Vue.axios.post(endpoint, body, {cancelToken: parameters.cancelToken.token})
-        } else {
-            return Vue.axios.post(endpoint, body)
-        }
+    post (endpoint, parameters) {
+        return Vue.axios.post(endpoint, parameters,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                cancelToken: parameters.cancelToken ? parameters.cancelToken.token : null
+            }
+        )
     },
 
     update (endpoint, parameters) {
@@ -85,6 +97,29 @@ let requestService = {
         }, parameters)
 
         return Vue.axios.post(endpoint, body)
+    },
+
+
+    get (endpoint, parameters) {
+        let config = {
+            headers: {
+                Authorization: localStorage.getItem('token')
+            }
+        }
+
+        let body = Object.assign(
+            {
+                token: localStorage.getItem('token'),
+                method: 'retrieve'
+            },
+            parameters
+        )
+
+        if (parameters && parameters.cancelToken) {
+            return Vue.axios.get(endpoint, parameters, Object.assign({cancelToken: parameters.cancelToken.token}, config))
+        } else {
+            return Vue.axios.get(endpoint, body, config)
+        }
     }
 }
 

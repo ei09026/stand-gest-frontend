@@ -6,7 +6,7 @@ let jwtAuthInterceptor = {
     type: 'response',
 
     process (response) {
-        let token = localStorage.getItem('token')
+        let token = localStorage.getItem('token')    
 
         if (response.status > 0 &&
             (response.data.error_code === 'AuthenticationFailedException' ||

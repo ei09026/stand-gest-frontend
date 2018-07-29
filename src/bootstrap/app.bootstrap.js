@@ -36,12 +36,10 @@ function boot () {
     // Boot all configure middlewares
     bootMiddlewares()
 
+    configService.fetchConfiguration()
+
     // Restore authentication from token and fetch configurations/translations
-    return authService.restoreAuthentication().then(() => {
-        return configService.fetchConfiguration()
-    }).then(() => {
-        return transService.loadTranslation()
-    }).then((resolve) => {
+    return transService.loadTranslation().then((resolve) => {
         app = new Vue({
             store,
             router,

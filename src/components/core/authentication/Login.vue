@@ -17,17 +17,30 @@
                 <div
                     v-if="step === 1">
 
-                    <input class="form-control m-b" autocomplete="new-password"
+                    <input 
+                        class="form-control m-b" 
+                        autocomplete="new-password"
                         ref="login"
                         :placeholder="$i18n.t('authentication.username')"
-                        v-model="credentials.login"
-                        @keyup.enter="nextStep()">
+                        v-model="credentials.email"
+                        @keyup.enter="submit()">
 
-                    <button type="button" class="btn btn-success block full-width"
-                        @click="nextStep()"
+                    <input 
+                        type="password" 
+                        class="form-control m-b" 
+                        autocomplete="new-password"
+                        ref="password"
+                        v-model="credentials.password"
+                        :placeholder="$i18n.t('authentication.password')"
+                        @keyup.enter="submit()">
+
+                    <button 
+                        type="button" 
+                        class="btn btn-success block full-width"
+                        @click="submit()"
                         :disabled="!isValid || isLoadingPreflight">
 
-                        {{ $i18n.t('navigation.next') }}
+                        {{ $i18n.t('authentication.login') }}
 
                         <i class="fa fa-fw fa-angle-right"
                             v-show="!isLoadingPreflight"></i>
@@ -35,66 +48,6 @@
                         <i class="fa fa-fw fa-cog fa-spin"
                             v-show="isLoadingPreflight"></i>
                     </button>
-                </div>
-
-                <div
-                    v-if="step === 2">
-
-                    <div>
-                        <img alt="image" class="img-circle circle-border"
-                            :src="pictureSource">
-
-                        <h3 class="m-t m-b"
-                            v-text="name"></h3>
-
-                        <!-- <select class="form-control m-b"
-                            v-if="tenants.length"
-                            ref="tenants"
-                            v-model="tenantId"
-                            :disabled="tenants.length === 1">
-
-                            <option
-                                v-if="tenants.length > 1"
-                                :value="null"
-                                v-text="$i18n.t('authentication.choose-tenant')"></option>
-
-                            <option
-                                v-for="tenant in tenants"
-                                :key="tenant.id"
-                                :value="tenant.id"
-                                v-text="tenant.description"></option>
-                        </select> -->
-                    </div>
-
-                    <div class="form-group">
-                        <input type="password" class="form-control" autocomplete="new-password"
-                            ref="password"
-                            v-model="credentials.password"
-                            :placeholder="$i18n.t('authentication.password')"    
-                            @keyup.enter="submit()">
-                    </div>
-
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <button type="button" class="btn block full-width"
-                                @click="previousStep()"
-                                :disabled="isLoggingIn">
-
-                                <i class="fa fa-angle-left"></i>
-                                
-                                {{ $i18n.t('navigation.previous') }}
-                            </button>
-                        </div>
-
-                        <div class="col-lg-6">
-                            <button type="button" class="btn btn-success block full-width"
-                                @click="submit()"
-                                :disabled="isLoggingIn || !isValid">
-
-                                {{ $i18n.t('authentication.login') }}
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 <div
@@ -167,9 +120,6 @@
 
             <p class="powered-by">
                 <small>Copyright © {{ currentYear }}</small>
-
-                <img class="m-l-sm"
-                    :src="buildPath('/static/assets/manufacturer-logo.png')">
             </p>
         </template>
     </div>
@@ -196,15 +146,11 @@
                 step: 1,
 
                 credentials: {
-                    login: '',
+                    email: '',
                     password: ''
                 },
 
                 error: null,
-
-                tenants: [],
-
-                tenantId: null,
 
                 name: '',
 
@@ -255,11 +201,8 @@
 
             isValid () {
                 if (this.step === 1) {
-                    return !!this.credentials.login
-                }
-
-                if (this.step === 2) {
-                    return !!this.credentials.password
+                    return !!this.credentials.email && 
+                        !!this.credentials.password
                 }
 
                 if (this.step === 3) {
@@ -303,10 +246,34 @@
 
                 self.loadingAdd('loggingIn')
 
-                authService.setTenant(self.tenantId)
+                authService.login(self.credentials).then(response => { 
+                    if(response.data.status === "fail") {
+                        toastrService.error(self.$i18n.t('general.error'), response.data.error.message, {positionClass: 'login-toast-top-right'})
+                    } else {
+                        toastrService.success('', self.$i18n.t('general.welcome') + "Nelson" + '.')
+                        localStorage.setItem('token', response.data.data)
+                        self.$router.push('/')
+                    }
 
-                authService.login({
-                    email: self.credentials.login,
+                    /*if (self.revokePassword) {
+                        self.step = 3
+                    } else {
+                        self.$router.push('/')
+
+                        toastrService.success('', self.$i18n.t('general.welcome') + user.name + '.')
+                    }*/ 
+                }).catch((error) => {                    
+                    toastrService.error(
+                        self.$i18n.t('general.error'),
+                        self.$i18n.t('authentication.invalid-authentication'),
+                        {positionClass: 'login-toast-top-right'})
+                }).finally(() => {
+                    self.loadingRemove('loggingIn')
+                })
+            
+
+                /*authService.login({
+                    email: self.credentials.email,
                     password: self.credentials.password
                 }).then(user => {
                     if (self.revokePassword) {
@@ -323,7 +290,7 @@
                         {positionClass: 'login-toast-top-right'})
                 }).then(() => {
                     self.loadingRemove('loggingIn')
-                })
+                })*/
             },
 
             redefinePassword () {
@@ -360,68 +327,13 @@
 
                     self.loadingRemove('redefiningPassword')
                 })
-            },
-
-            nextStep () {
-                // Go to step 2
-                if (this.step === 1) {
-                    let self = this
-
-                    if (self.isLoadingPreflight || !self.isValid) {
-                        return
-                    }
-
-                    self.loadingAdd('loadingPreflight')
-
-                    authService.identityPreflight(self.credentials.login).then(user => {
-                        self.tenants = user.tenants
-                        self.picture.isInternal = user.internalPicture
-                        self.picture.data = user.picture
-                        self.name = user.name
-                        self.revokePassword = user.revokePassword
-
-                        self.step = 2
-                    }).catch(error => {
-                        toastrService.error(
-                            self.$i18n.t('general.error'),
-                            self.$i18n.t('authentication.invalid-or-inactive-user'),
-                            {positionClass: 'login-toast-top-right'})
-
-                        self.error = error
-                    }).then(() => {
-                        self.loadingRemove('loadingPreflight')
-                    })
-                }
-            },
-
-            previousStep () {
-                if (this.step === 2) {
-                    this.tenants = []
-                    this.picture.isInternal = false
-                    this.credentials.password = ''
-                    this.picture.data = ''
-                    this.step = 1
-                    this.name = ''
-                }
-            },
+            },        
 
             autoFocus () {
                 this.$nextTick(() => {
                     if (this.step === 1 && this.$refs.login) {
                         this.$refs.login.focus()
-                    }
-
-                    if (this.step === 2 && this.$refs.password) {
-                        if (this.tenants.length > 1) {
-                            if (this.$refs.tenants) {
-                                this.$refs.tenants.focus()
-                            }
-                        } else {
-                            if (this.$refs.password) {
-                                this.$refs.password.focus()
-                            }
-                        }
-                    }
+                    }                    
 
                     if (this.step === 3 && this.$refs.newPassword) {
                         this.$refs.newPassword.focus()
@@ -435,16 +347,6 @@
         },
 
         watch: {
-            tenants () {
-                if (this.tenants.length === 1) {
-                    this.tenantId = this.tenants[0].id
-
-                    return
-                }
-
-                this.tenantId = null
-            },
-
             isLoggingIn () {
                 if (!this.isLoggingIn) {
                     this.autoFocus()

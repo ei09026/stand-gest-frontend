@@ -107,7 +107,7 @@
             },
 
             updatePageHasSideMenu (fullContent, routeSideMenu) {
-                if (fullContent || !authService.hasClaim('CRITICAL_OPERATIONS')) {
+                if (fullContent) {
                     this.setPageHasSideMenu(false)
                     return
                 }

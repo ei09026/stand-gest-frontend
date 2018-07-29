@@ -1,5 +1,6 @@
 import SessionTypes from '@/components/configurations/SessionTypes'
 import Checklists from '@/components/configurations/Checklists'
+import Brands from '@/components/configurations/Brands'
 
 let routes = [
     {
@@ -9,6 +10,10 @@ let routes = [
     {
         path: '/configurations/checklists',
         component: Checklists
+    },
+    {
+        path: '/configurations/brands',
+        component: Brands
     }
 ]
 

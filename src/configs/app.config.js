@@ -2,7 +2,7 @@ import env from '@/core/env'
 
 export default {
     app_env: env.get('app_env', 'production'),
-    app_name: 'Moza Operador',
+    app_name: 'Auto Gest',
     app_module: 'WebFrontend',
     app_name_short: 'IDT',
     locale: 'pt_PT',

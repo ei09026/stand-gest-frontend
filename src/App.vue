@@ -17,7 +17,7 @@
     import Page from '@/components/layout/Page'
 
     import signalrService from '@/services/signalr/signalr.service'
-import { NullLogger } from '@aspnet/signalr';
+    import { NullLogger } from '@aspnet/signalr';
 
     const currentBuildNumber = config.get('app.build_number', 0)
 
@@ -168,26 +168,9 @@ import { NullLogger } from '@aspnet/signalr';
                     window.loadingScreen = null
                 }
             })
-
-            signalrService.initialize()
-
-            // Refresh token every 30 min
-            tokenRefresher = setInterval(self.refreshToken, 1800000)
-
-            // Check for updates every 5 minutes
-            if (!env.environment('local')) {
-                checkForUpdates = setInterval(self.checkForUpdates, 300000)
-            }
         },
 
         beforeDestroy () {
-            if (tokenRefresher) {
-                clearInterval(tokenRefresher)
-            }
-
-            if (checkForUpdates) {
-                clearInterval(checkForUpdates)
-            }
         }
     }
 </script>
@@ -203,10 +186,6 @@ import { NullLogger } from '@aspnet/signalr';
 
     body.fixed-nav #wrapper #page-wrapper.full-content {
         margin: 0px;
-    }
-
-    #navbar-wrapper+.wrapper {
-        /* margin-top: 60px; */
     }
 
     .navbar-brand {

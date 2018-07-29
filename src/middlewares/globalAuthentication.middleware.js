@@ -9,13 +9,12 @@ let globalAuthenticationMiddleware = {
     },
 
     handle (to, from, next, middlewareParams) {
-        let isAuthenticated = authService.check()
+        let isAuthenticated = localStorage.getItem('token')
         let matchesRequireAuth = to.matched.some(record => !record.meta || !(record.meta.allowGuest || record.meta.requireGuest))
         let matchesRequireGuest = to.matched.some(record => record.meta && record.meta.requireGuest)
 
-        if (matchesRequireAuth &&
-            (!isAuthenticated ||
-                (authService.revokePasswordCheck() && config.get('app.app_module') === 'WebFrontoffice'))) {
+        if (matchesRequireAuth && (!isAuthenticated)) {
+                // (authService.revokePasswordCheck() && config.get('app.app_module') === 'WebFrontoffice'))) {
 
             to.meta.stopPipeline = true
 
