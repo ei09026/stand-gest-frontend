@@ -24,7 +24,7 @@
             :has-filtered-results="hasFilteredResults"
             @search="search"
             @order="order"
-            @row-clicked="openEditingChecklists"
+            @row-clicked="openBrandManagement"
             @filter="fetchBrands"
             @filter-clear="clearFilter"
             @refresh="fetchBrands">
@@ -90,15 +90,15 @@
         </idt-table>
 
         <modal xl
-            :show="showChecklistsEditModal"
-            :title="checklistEditModalTitle"
+            :show="showBrandManagementModal"
+            :title="brandManagementModalTitle"
             :ok-text="$i18n.t('actions.save')"
-            :ok-button-disabled="!isEditingChecklistsValid"
+            :ok-button-disabled="!isBrandManagementValid"
             @ok="save"
-            @close="closeEditingChecklists">
+            @close="closeBrandManagement">
 
             <template
-                v-if="editingChecklists">
+                v-if="brandDto">
 
                 <div class="row">
                     <div class="col-md-6 col-lg-11">
@@ -106,7 +106,7 @@
                             <label>Descrição</label>
 
                             <input id="itemDescription" class="form-control"
-                                v-model="editingChecklists.description"
+                                v-model="brandDto.description"
                                 placeholder="Descrição">
                         </div>
                     </div>
@@ -116,128 +116,10 @@
                             <label>Activo</label>
 
                             <check-item
-                                v-model="editingChecklists.active">
+                                v-model="brandDto.active">
                             </check-item>
                         </div>
                     </div>
-
-                    <div class="row"
-                        v-if="editingChecklists.id">
-                        <div class="col-lg-12">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <button class="btn btn-success btn-circle btn-outline m-t-n-xs m-l-sm pull-right"
-                                        :class="{'disabled': (!isEditingChecklistsValid)}"
-                                        v-tooltip="{title: $i18n.t('checklists.add-new-item')}"
-                                        @click="openNewItem">
-
-                                        <i class="fa fa-plus"></i>
-                                    </button>
-                                    <div class="row">
-                                        <div class="col-xs-6">Descrição</div>
-                                        <div class="col-xs-2">Nº Páginas</div>
-                                        <div class="col-xs-2">Só Leitura</div>
-                                        <div class="col-xs-1">Ativo</div>
-                                    </div>
-                                </div>
-
-                                <div class="list-group">
-                                    <div class="list-group-item editing"
-                                        v-if="newItem">
-                                        <template
-                                            v-if="!isSavingNewItem">
-                                            
-                                            <div class="row">
-                                                    <div class="col-xs-6">
-                                                        <input class="form-control"
-                                                            v-model="newItem.description"/>
-
-                                                    </div>
-                                                    <div class="col-xs-2">
-                                                        <input type="number" class="form-control"
-                                                            v-model="newItem.pages"/>
-                                                    </div>
-                                                    <div class="col-xs-2">
-                                                        <check-item
-                                                            v-model="newItem.readonly">
-                                                        </check-item>
-                                                    </div>
-                                                    <div class="col-xs-1">
-                                                        <check-item
-                                                            v-model="newItem.active">
-                                                        </check-item>
-                                                    </div>
-
-                                                <div>
-                                                    <button class="btn btn-success btn-circle btn-outline"
-                                                        :class="{'disabled': false}"
-                                                        v-tooltip="{title: (true ? $i18n.t('actions.save') : 'invalid!')}"
-                                                        @click="saveItem(newItem)">
-
-                                                        <i class="fa fa-save"></i>
-                                                    </button>
-
-                                                    <button class="btn btn-danger btn-circle btn-outline m-l-xs"
-                                                        v-tooltip="{title: $i18n.t('actions.cancel')}"
-                                                        @click="closeNewItem">
-
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                        </template>
-
-                                    </div>
-
-                                    <div class="list-group claim-list">
-                                        <draggable v-model="checklistItems" class="dragArea" @update="onUpdate">
-                                            <div class="list-group-item draggable"
-                                                :key="checklistItem.id"
-                                                v-for="checklistItem in checklistItems">
-                                                <div class="row">
-                                                    <div class="col-xs-6" v-text="checklistItem.description"></div>
-                                                    <div class="col-xs-2" v-text="checklistItem.pages"></div>
-                                                    <div class="col-xs-2">
-                                                        <i class="fa"
-                                                            :class="{
-                                                                'fa-check text-success': checklistItem.readonly,
-                                                                'fa-ban text-danger': !checklistItem.readonly
-                                                            }"></i>
-                                                    </div>
-
-                                                    <div class="col-xs-1">
-                                                        <i class="fa"
-                                                            :class="{
-                                                                'fa-check text-success': checklistItem.active,
-                                                                'fa-ban text-danger': !checklistItem.active
-                                                            }"></i>
-                                                    </div>
-
-                                                    <div>
-                                                        <button class="btn btn-primary btn-circle btn-outline"
-                                                            v-tooltip="{title: $i18n.t('actions.change')}"
-                                                            @click="editItem(checklistItem)">
-
-                                                            <i class="fas fa-pencil-alt"></i>
-                                                        </button>
-
-                                                        <button class="btn btn-danger btn-circle btn-outline m-l-xs"
-                                                            v-tooltip="{title: $i18n.t('actions.delete')}"
-                                                            @click="removeItem(checklistItem)">
-
-                                                            <i class="fa fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </draggable>
-                                    </div>
-                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </template>
         </modal>
@@ -245,7 +127,7 @@
         <button-bar>
             <button class="btn btn-circle btn-primary"
                 v-tooltip="{title: $i18n.t('actions.add')}"
-                @click="openEditingChecklists()">
+                @click="openBrandManagement()">
 
                 <i class="fa fa-plus"></i>
             </button>
@@ -324,9 +206,9 @@
                     }
                 ],
 
-                showChecklistsEditModal: false,
+                showBrandManagementModal: false,
 
-                editingChecklists: null
+                brandDto: null
             }
         },
 
@@ -352,19 +234,19 @@
                 return placeholder.charAt(0).toUpperCase() + placeholder.slice(1).toLowerCase()
             },
 
-            isEditingChecklistsValid () {
-                return !!(this.editingChecklists &&
-                    this.editingChecklists.description && !this.newItem)
+            isBrandManagementValid () {
+                return !!(this.brandDto &&
+                    this.brandDto.description && !this.newItem)
             },
 
-            checklistEditModalTitle () {
-                if (!this.editingChecklists) {
+            brandManagementModalTitle () {
+                if (!this.brandDto) {
                     return null
                 }
 
-                return this.editingChecklists.id
-                    ? 'Editar checklist'
-                    : 'Nova checklist'
+                return this.brandDto.id
+                    ? 'Editar marca'
+                    : 'Nova marca'
             },
 
             tableMinHeight () {
@@ -405,55 +287,40 @@
                 this.newItem = _.clone(item)
             },
 
-            saveItem (item) {
+            saveBrand (brand) {
                 let self = this
 
-                self.loadingAdd('configurations-saving-checklistItem')
+                self.loadingAdd('configurations-saving-brand')
 
                 let parameters = {}
                 let request = null
 
-                if (item.id) { // Edit
+                if (brand.id) { // Edit
                     parameters = {
-                        data: {
-                            fields: {
-                                description: item.description,
-                                pages: item.pages,
-                                readonly: item.readonly,
-                                active: item.active,
-                                rank: item.rank
-                            }
-                        },
-                        filter: {
-                            ids: [item.id]
-                        }
+                        id: brand.id,
+                        description: brand.description,                                
+                        active: brand.active
                     }
 
-                    request = brandService.items.update(parameters)
+                    request = brandService.update(parameters)
                 } else { // New
                     parameters = {
-                        data: {
-                            checklistId: self.editingChecklists.id,
-                            description: item.description,
-                            pages: item.pages,
-                            readonly: item.readonly,
-                            active: item.active,
-                            rank: self.checklistItems.length + 1
-                        }
+                        description: brand.description,                                
+                        active: brand.active
                     }
 
-                    request = brandService.items.create(parameters)
+                    request = brandService.create(parameters)
                 };
 
                 return request.then(response => {
                     if (response.data.status === 'success') {
-                        self.fetchChecklistItems(self.editingChecklists.id)
+                        self.fetchBrands()
                     } else {
                         //TODO
                     }
 
                     self.closeNewItem()
-                    self.loadingRemove('configurations-saving-checklistItem')
+                    self.loadingRemove('configurations-saving-brand')
                 })
             },
 
@@ -501,29 +368,28 @@
                 this.fetchBrands()
             },
 
-            openEditingChecklists (checklist) {
-                let editingChecklists = {
+            openBrandManagement (brand) {
+                let brandDto = {
                     id: null,
                     description: '',
-                    checklistId: null,
                     active: true
                 }
 
                 // Edit
-                if (checklist) {
-                    Object.assign(editingChecklists, checklist)
-                    this.fetchChecklistItems(editingChecklists.id)
+                if (brand) {
+                    Object.assign(brandDto, brand)
+                    // fetch models this.fetchChecklistItems(editingChecklists.id)
                 } else {
-                    this.checklistItems = []
+                    //brand models  this.checklistItems = []
                 }
 
-                this.editingChecklists = editingChecklists
-                this.showChecklistsEditModal = true                
+                this.brandDto = brandDto
+                this.showBrandManagementModal = true                
             },
 
-            closeEditingChecklists () {
-                this.showChecklistsEditModal = false
-                this.editingChecklists = null
+            closeBrandManagement () {
+                this.showBrandManagementModal = false
+                this.brandDto = null
                 this.newItem = null
             },
 
@@ -535,16 +401,16 @@
                 let parameters = {}
                 let request = null
 
-                if (self.editingChecklists.id) { // Edit
+                if (self.brandDto.id) { // Edit
                     parameters = {
                         data: {
                             fields: {
-                                description: self.editingChecklists.description,
-                                active: self.editingChecklists.active
+                                description: self.brandDto.description,
+                                active: self.brandDto.active
                             }
                         },
                         filter: {
-                            ids: [self.editingChecklists.id]
+                            ids: [self.brandDto.id]
                         }
                     }
 
@@ -552,8 +418,8 @@
                 } else { // New
                     parameters = {
                         data: {
-                            description: self.editingChecklists.description,
-                            active: self.editingChecklists.active
+                            description: self.brandDto.description,
+                            active: self.brandDto.active
                         }
                     }
 
@@ -563,8 +429,8 @@
                 return request.then(response => {
                     if (response.data.status === 'success') {
                         self.fetchBrands()
-                        if (_.isNil(self.editingChecklists.id)) {
-                            self.editingChecklists.id = response.data.data.id
+                        if (_.isNil(self.brandDto.id)) {
+                            self.brandDto.id = response.data.data.id
                         }
                     } else {
                         //TODO

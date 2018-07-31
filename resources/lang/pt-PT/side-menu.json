@@ -4,5 +4,10 @@
     "session-types": "Motivos",
     "checklists": "Checklists",
     "users": "Utilizadores",
-    "brands": "Marcas"
+    "brandsAndModels": "Marcas e modelos",
+    "fuelTypes": "Tipos de combustível",
+    "categories": "Categorias",
+    "vehicles": "Veículos",
+    "clients": "Clientes",
+    "negotiations": "Negócios"
 }

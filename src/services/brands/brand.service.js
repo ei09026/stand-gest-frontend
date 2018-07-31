@@ -5,7 +5,7 @@ const API_URL = config.get('app.api.endpoints.backend')
 
 let brandService = {
     create (parameters) {
-        return requestService.create(API_URL + '/api/v1/brands', parameters)
+        return requestService.post(API_URL + '/api/v1/create-brand', parameters)
     },
 
     retrieve (parameters) {
