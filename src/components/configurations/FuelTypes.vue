@@ -13,21 +13,21 @@
             :columns="columns"
             column-key="name"
             column-label="title"
-            :rows="brands"
+            :rows="fuelTypes"
             row-key="id"
             :search="filter.description"
             :search-placeholder="searchPlaceholder"
             :unorderable-columns="['active']"
             :orderBy="orderBy"
-            :loading="isFetchingBrands"
+            :loading="isFetchingfuelTypes"
             :pagination="pagination"
             :has-filtered-results="hasFilteredResults"
             @search="search"
             @order="order"
-            @row-clicked="openBrandManagement"
-            @filter="fetchBrands"
+            @row-clicked="openFuelTypeManagement"
+            @filter="fetchFuelTypes"
             @filter-clear="clearFilter"
-            @refresh="fetchBrands"
+            @refresh="fetchFuelTypes"
             @page-changed="pageChanged">
 
             <template slot="filter">
@@ -91,15 +91,15 @@
         </idt-table>
 
         <modal xl
-            :show="showBrandManagementModal"
-            :title="brandManagementModalTitle"
+            :show="showFuelTypeManagementModal"
+            :title="fuelTypeManagementModalTitle"
             :ok-text="$i18n.t('actions.save')"
-            :ok-button-disabled="!isBrandManagementValid"
+            :ok-button-disabled="!isFuelTypeManagementValid"
             @ok="save"
-            @close="closeBrandManagement">
+            @close="closeFuelTypeManagement">
 
             <template
-                v-if="brandDto">
+                v-if="fuelTypeDto">
 
                 <div class="row">
                     <div class="col-md-6 col-lg-11">
@@ -107,7 +107,7 @@
                             <label>Descrição</label>
 
                             <input id="itemDescription" class="form-control"
-                                v-model="brandDto.description"
+                                v-model="fuelTypeDto.description"
                                 placeholder="Descrição">
                         </div>
                     </div>
@@ -117,7 +117,7 @@
                             <label>Activo</label>
 
                             <check-item
-                                v-model="brandDto.active">
+                                v-model="fuelTypeDto.active">
                             </check-item>
                         </div>
                     </div>
@@ -128,7 +128,7 @@
         <button-bar>
             <button class="btn btn-circle btn-primary"
                 v-tooltip="{title: $i18n.t('actions.add')}"
-                @click="openBrandManagement()">
+                @click="openFuelTypeManagement()">
 
                 <i class="fa fa-plus"></i>
             </button>
@@ -145,7 +145,7 @@
     import IdtTable from '@/components/shared/IdtTable/IdtTable'
     import RadioItem from '@/components/shared/input/RadioItem'
     import Multiselect from '@/components/shared/multi-select'
-    import brandService from '@/services/brands/brand.service'
+    import fuelTypesService from '@/services/fuelTypes/fuelTypes.service'
     import PageHeader from '@/components/layout/PageHeader'
     import ButtonBar from '@/components/shared/ButtonBar'
     import Modal from '@/components/shared/Modal'
@@ -169,13 +169,9 @@
 
         data () {
             return {
-                title: 'Marcas',
+                title: 'Tipos de combustível',
 
-                newItem: null,
-
-                isSavingNewItem: false,
-
-                brands: [],
+                fuelTypes: [],
 
                 checklistItems: [],
 
@@ -206,9 +202,9 @@
                     }
                 ],
 
-                showBrandManagementModal: false,
+                showFuelTypeManagementModal: false,
 
-                brandDto: null
+                fuelTypeDto: null
             }
         },
 
@@ -218,8 +214,8 @@
                 'pageContentSize'
             ]),
 
-            isFetchingBrands () {
-                return this.loadings.indexOf('configurations-fetching-brands') >= 0
+            isFetchingfuelTypes () {
+                return this.loadings.indexOf('configurations-fetching-fuel-types') >= 0
             },
 
             hasFilteredResults () {
@@ -234,19 +230,19 @@
                 return placeholder.charAt(0).toUpperCase() + placeholder.slice(1).toLowerCase()
             },
 
-            isBrandManagementValid () {
-                return !!(this.brandDto &&
-                    this.brandDto.description && !this.newItem)
+            isFuelTypeManagementValid () {
+                return !!(this.fuelTypeDto &&
+                    this.fuelTypeDto.description)
             },
 
-            brandManagementModalTitle () {
-                if (!this.brandDto) {
+            fuelTypeManagementModalTitle () {
+                if (!this.fuelTypeDto) {
                     return null
                 }
 
-                return this.brandDto.id
-                    ? 'Editar marca'
-                    : 'Nova marca'
+                return this.fuelTypeDto.id
+                    ? 'Editar tipo combustível'
+                    : 'Novo tipo combustível'
             },
 
             tableMinHeight () {
@@ -262,13 +258,13 @@
 
             pageChanged (page) {
                 this.pagination.page = page
-                this.fetchBrands();
+                this.fetchFuelTypes();
             },
 
-            fetchBrands () {
+            fetchFuelTypes () {
                 let self = this
 
-                self.loadingAdd('configurations-fetching-brands')
+                self.loadingAdd('configurations-fetching-fuel-types')
 
                 let parameters = {
                     filter: self.filter,
@@ -277,15 +273,15 @@
                     method: 'retrieve'
                 }
 
-                return brandService.retrieve(parameters).then(response => {
+                return fuelTypesService.retrieve(parameters).then(response => {
                     if (response.data.status === 'success') {
-                        self.brands = response.data.data.data
+                        self.fuelTypes = response.data.data.data
                         self.pagination.totalItems = response.data.data.total
                     } else {
                         // TODO
                     }
 
-                    self.loadingRemove('configurations-fetching-brands')
+                    self.loadingRemove('configurations-fetching-fuel-types')
                 }).catch(exception => {
                     throw exception
                 })
@@ -294,84 +290,79 @@
             search (value) {
                 this.filter.description = value
 
-                this.fetchBrands()
+                this.fetchFuelTypes()
             },
 
             order (orderBy) {
                 this.orderBy = orderBy
 
-                this.fetchBrands()
+                this.fetchFuelTypes()
             },
 
             clearFilter () {
                 this.filter.description = ''
                 this.filter.active = null
 
-                this.fetchBrands()
+                this.fetchFuelTypes()
             },
 
-            openBrandManagement (brand) {
-                let brandDto = {
+            openFuelTypeManagement (fuelType) {
+                let fuelTypeDto = {
                     id: null,
                     description: '',
                     active: true
                 }
 
                 // Edit
-                if (brand) {
-                    Object.assign(brandDto, brand)
+                if (fuelType) {
+                    Object.assign(fuelTypeDto, fuelType)
 
-                    if (brand.deleted_at) {
-                        brandDto.active = false
+                    if (fuelType.deleted_at) {
+                        fuelTypeDto.active = false
                     }
                     // fetch models this.fetchChecklistItems(editingChecklists.id)
-                } else {
-                    //brand models  this.checklistItems = []
                 }
 
-                this.brandDto = brandDto
-                this.showBrandManagementModal = true
+                this.fuelTypeDto = fuelTypeDto
+                this.showFuelTypeManagementModal = true
             },
 
-            closeBrandManagement () {
-                this.showBrandManagementModal = false
-                this.brandDto = null
-                this.newItem = null
+            closeFuelTypeManagement () {
+                this.showFuelTypeManagementModal = false
+                this.fuelTypeDto = null
             },
 
             save () {
                 let self = this
 
-                self.loadingAdd('configurations-saving-brand')
+                self.loadingAdd('configurations-saving-fuel-type')
 
                 let parameters = {}
                 let request = null
-                
-                debugger;
-                
-                if (self.brandDto.id) { // Edit
+
+                if (self.fuelTypeDto.id) { // Edit
                     parameters = {
                         data: {
-                            description: self.brandDto.description,
-                            active: self.brandDto.active
+                            description: self.fuelTypeDto.description,
+                            active: self.fuelTypeDto.active
                         },
                         filter: {
-                            id: self.brandDto.id
+                            id: self.fuelTypeDto.id
                         },
                         method: 'update'
                     }
 
-                    request = brandService.update(parameters)
+                    request = fuelTypesService.update(parameters)
                 } else { // New
                     parameters = {
                         data: {
-                            description: self.brandDto.description,
-                            active: self.brandDto.active
+                            description: self.fuelTypeDto.description,
+                            active: self.fuelTypeDto.active
                         },
                         method: 'create'
                     }
 
-                    request = brandService.create(parameters)
+                    request = fuelTypesService.create(parameters)
                 };
 
                 return request.then(response => {
@@ -382,7 +373,7 @@
                             {positionClass: 'login-toast-top-right'}
                         )
 
-                        self.fetchBrands()
+                        self.fetchFuelTypes()
                     } else {
                         //TODO
                         toastrService.error(
@@ -390,28 +381,26 @@
                         response.data.error.message[0],
                         {positionClass: 'login-toast-top-right'})
                     }
-
-                    self.loadingRemove('configurations-saving-brand')
                 }).catch((error) => {
                     toastrService.error(
                         self.$i18n.t('general.error'),
                         self.$i18n.t('general.error'),
                         {positionClass: 'login-toast-top-right'})
                 }).finally(() => {
-                    self.closeBrandManagement()
-                    self.loadingRemove('configurations-saving-brand')
+                    self.closeFuelTypeManagement()
+                    self.loadingRemove('configurations-saving-fuel-type')
                 })
             }
         },
 
         watch: {
             'filter.active' () {
-                this.fetchBrands()
+                this.fetchFuelTypes()
             }
         },
 
         created () {
-            this.fetchBrands()
+            this.fetchFuelTypes()
         }
     }
 

@@ -269,6 +269,19 @@
                                 },
                                 {
                                     "id": 3,
+                                    "internalDescription":"Users",
+                                    "parentMenuId": 2,
+                                    "router": "/configurations/users",
+                                    "i18N":"side-menu.users",
+                                    "icon":null,
+                                    "rank": 10,
+                                    "slug":null,
+                                    "level": 2,
+                                    "permission":null,
+                                    "enabled":"True"
+                                },
+                                {
+                                    "id": 4,
                                     "internalDescription":"brandsAndModels",
                                     "parentMenuId": 2,
                                     "router": "/configurations/brands",
@@ -281,7 +294,7 @@
                                     "enabled":"True"
                                 },
                                 {
-                                    "id": 4,
+                                    "id": 5,
                                     "internalDescription":"fuelTypes",
                                     "parentMenuId": 2,
                                     "router": "/configurations/fuel-types",
@@ -294,7 +307,7 @@
                                     "enabled":"True"
                                 },
                                 {
-                                    "id": 5,
+                                    "id": 6,
                                     "internalDescription":"categories",
                                     "parentMenuId": 2,
                                     "router": "/configurations/categories",
@@ -307,7 +320,7 @@
                                     "enabled":"True"
                                 },
                                 {
-                                    "id": 6,
+                                    "id": 7,
                                     "internalDescription":"Vehicles",
                                     "parentMenuId":null,
                                     "router":null,
@@ -320,7 +333,7 @@
                                     "enabled":"True"
                                 },
                                 {
-                                    "id": 7,
+                                    "id": 8,
                                     "internalDescription":"Clients",
                                     "parentMenuId":null,
                                     "router":null,
@@ -333,7 +346,7 @@
                                     "enabled":"True"
                                 },
                                 {
-                                    "id": 8,
+                                    "id": 9,
                                     "internalDescription":"Negotiations",
                                     "parentMenuId":null,
                                     "router":null,
