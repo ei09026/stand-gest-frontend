@@ -27,7 +27,8 @@
             @row-clicked="openBrandManagement"
             @filter="fetchBrands"
             @filter-clear="clearFilter"
-            @refresh="fetchBrands">
+            @refresh="fetchBrands"
+            @page-changed="pageChanged">
 
             <template slot="filter">
                 <div class="row">
@@ -137,7 +138,6 @@
 
 <script>
     import _ from 'lodash'
-    import Draggable from 'vuedraggable'
     import RadioItem from '@/components/shared/input/RadioItem'
     import sessionsServices from '@/services/sessions/session.service'
     import brandService from '@/services/brands/brand.service'
@@ -163,8 +163,7 @@
             IdtTable,
             CheckItem,
             Multiselect,
-            RadioItem,
-            Draggable
+            RadioItem
         },
 
         data () {
@@ -185,7 +184,7 @@
                 },
 
                 pagination: {
-                    itemsPerPage: 25,
+                    itemsPerPage: 10,
                     page: 1,
                     totalItems: 0
                 },
@@ -324,6 +323,11 @@
                 })
             },
 
+            pageChanged (page) {
+                this.pagination.page = page
+                this.fetchBrands();
+            },
+
             fetchBrands () {
                 let self = this
 
@@ -338,7 +342,7 @@
                 return brandService.retrieve(parameters).then(response => {                    
                     if (response.data.status === 'success') {
                         self.brands = response.data.data.data
-                        self.pagination.totalItems = response.data.data.total
+                        self.pagination.totalItems = response.data.data.total                  
                     } else {
                         // TODO
                     }
@@ -438,35 +442,6 @@
                     
                     self.loadingRemove('configurations-saving-checklists')
                 })
-            },
-
-            fetchChecklistItems (checklistId) {
-                let self = this
-
-                self.loadingAdd('configurations-fetching-checklist-items')
-
-                let parameters = {
-                    filter: {
-                        checklistId: checklistId
-                    },
-                    pagination: self.pagination,
-                    orderBy: {
-                        column: 'rank',
-                        direction: 'asc'
-                    }
-                }
-
-                return brandService.items.retrieve(parameters).then(response => {
-                    if (response.data.status === 'success') {
-                        self.checklistItems = response.data.data.results
-                    } else {
-                        // TODO
-                    }
-
-                    self.loadingRemove('configurations-fetching-checklist-items')
-                }).catch(exception => {
-                    throw exception
-                })
             }
         },
 
@@ -484,15 +459,6 @@
 </script>
 
 <style>
-    .draggable {
-        cursor: move;
-    }
-
-    .non-draggable {
-        background-color: rgba(209, 218, 222, 0.38);
-        cursor: auto;
-    }
-
     .editing {
         background-color: ghostwhite !important;
     }

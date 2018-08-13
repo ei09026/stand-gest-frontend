@@ -297,7 +297,7 @@
                                     "internalDescription":"categories",
                                     "parentMenuId": 2,
                                     "router": "/configurations/categories",
-                                    "i18N":"side-menu.fuelTypes",
+                                    "i18N":"side-menu.categories",
                                     "icon":null,
                                     "rank": 40,
                                     "slug":null,
