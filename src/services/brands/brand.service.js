@@ -5,7 +5,7 @@ const API_URL = config.get('app.api.endpoints.backend')
 
 let brandService = {
     create (parameters) {
-        return requestService.post(API_URL + '/api/v1/create-brand', parameters)
+        return requestService.post(API_URL + '/api/v1/brands', parameters)
     },
 
     retrieve (parameters) {
@@ -13,7 +13,7 @@ let brandService = {
     },
 
     update (parameters) {
-        return requestService.update(API_URL + '/api/v1/brands', parameters)
+        return requestService.post(API_URL + '/api/v1/brands', parameters)
     },
 
     items: {

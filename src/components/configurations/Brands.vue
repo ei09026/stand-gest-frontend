@@ -138,17 +138,18 @@
 
 <script>
     import _ from 'lodash'
-    import RadioItem from '@/components/shared/input/RadioItem'
     import sessionsServices from '@/services/sessions/session.service'
+    import CheckItem from '@/components/shared/check-items/CheckItem'
+    import requestService from '@/services/shared/request.service'
+    import toastrService from '@/services/shared/toastr.service'
+    import IdtTable from '@/components/shared/IdtTable/IdtTable'
+    import RadioItem from '@/components/shared/input/RadioItem'
+    import Multiselect from '@/components/shared/multi-select'
     import brandService from '@/services/brands/brand.service'
     import PageHeader from '@/components/layout/PageHeader'
-    import requestService from '@/services/shared/request.service'
-    import tooltip from '@/directives/tooltip'
     import ButtonBar from '@/components/shared/ButtonBar'
     import Modal from '@/components/shared/Modal'
-    import IdtTable from '@/components/shared/IdtTable/IdtTable'
-    import CheckItem from '@/components/shared/check-items/CheckItem'
-    import Multiselect from '@/components/shared/multi-select'
+    import tooltip from '@/directives/tooltip'
     import {mapGetters, mapActions} from 'vuex'
 
     export default {
@@ -259,33 +260,6 @@
                 'loadingRemove'
             ]),
 
-            onUpdate () {
-                let self = this
-
-                _.forEach(this.checklistItems, (item, index) => {
-                    item.rank = index
-                    self.saveItem(item)
-                });
-            },
-
-            openNewItem () {
-                this.newItem = {
-                    id: null,
-                    pages: 0,
-                    readonly: false,
-                    active: true
-                }
-            },
-
-            closeNewItem () {
-                this.newItem = null
-            },
-
-            editItem (item)
-            {
-                this.newItem = _.clone(item)
-            },
-
             saveBrand (brand) {
                 let self = this
 
@@ -297,14 +271,14 @@
                 if (brand.id) { // Edit
                     parameters = {
                         id: brand.id,
-                        description: brand.description,                                
+                        description: brand.description,
                         active: brand.active
                     }
 
                     request = brandService.update(parameters)
                 } else { // New
                     parameters = {
-                        description: brand.description,                                
+                        description: brand.description,
                         active: brand.active
                     }
 
@@ -336,13 +310,14 @@
                 let parameters = {
                     filter: self.filter,
                     pagination: self.pagination,
-                    orderBy: self.orderBy
+                    orderBy: self.orderBy,
+                    method: 'retrieve'
                 }
 
-                return brandService.retrieve(parameters).then(response => {                    
+                return brandService.retrieve(parameters).then(response => {
                     if (response.data.status === 'success') {
                         self.brands = response.data.data.data
-                        self.pagination.totalItems = response.data.data.total                  
+                        self.pagination.totalItems = response.data.data.total
                     } else {
                         // TODO
                     }
@@ -388,7 +363,7 @@
                 }
 
                 this.brandDto = brandDto
-                this.showBrandManagementModal = true                
+                this.showBrandManagementModal = true
             },
 
             closeBrandManagement () {
@@ -400,7 +375,7 @@
             save () {
                 let self = this
 
-                self.loadingAdd('configurations-saving-checklists')
+                self.loadingAdd('configurations-saving-brand')
 
                 let parameters = {}
                 let request = null
@@ -408,14 +383,13 @@
                 if (self.brandDto.id) { // Edit
                     parameters = {
                         data: {
-                            fields: {
-                                description: self.brandDto.description,
-                                active: self.brandDto.active
-                            }
+                            description: self.brandDto.description,
+                            active: self.brandDto.active
                         },
                         filter: {
-                            ids: [self.brandDto.id]
-                        }
+                            id: self.brandDto.id
+                        },
+                        method: 'update'
                     }
 
                     request = brandService.update(parameters)
@@ -424,7 +398,8 @@
                         data: {
                             description: self.brandDto.description,
                             active: self.brandDto.active
-                        }
+                        },
+                        method: 'create'
                     }
 
                     request = brandService.create(parameters)
@@ -432,15 +407,33 @@
 
                 return request.then(response => {
                     if (response.data.status === 'success') {
+                        toastrService.success(
+                            self.$i18n.t('general.success'),
+                            self.$i18n.t('general.success-save'),
+                            {positionClass: 'login-toast-top-right'}
+                        )
+
                         self.fetchBrands()
                         if (_.isNil(self.brandDto.id)) {
                             self.brandDto.id = response.data.data.id
                         }
                     } else {
                         //TODO
+                        toastrService.error(
+                        self.$i18n.t('general.error'),
+                        response.data.error.message[0],
+                        {positionClass: 'login-toast-top-right'})
                     }
-                    
-                    self.loadingRemove('configurations-saving-checklists')
+
+                    self.loadingRemove('configurations-saving-brand')
+                }).catch((error) => {
+                    toastrService.error(
+                        self.$i18n.t('general.error'),
+                        self.$i18n.t('general.error'),
+                        {positionClass: 'login-toast-top-right'})
+                }).finally(() => {
+                    self.closeBrandManagement()
+                    self.loadingRemove('configurations-saving-brand')
                 })
             }
         },

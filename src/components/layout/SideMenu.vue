@@ -214,6 +214,7 @@
             }
             },
 
+        
         methods: {
             isMenuActive (menu) {
                 return this.activeMenuIds.indexOf(menu.id) >= 0
@@ -242,7 +243,7 @@
                             "results":[
                                 {
                                     "id":1,
-                                    "internalDescription":"Home",
+                                    "internalDescription": "Home",
                                     "parentMenuId":null,
                                     "router":"/",
                                     "i18N":"side-menu.home",
