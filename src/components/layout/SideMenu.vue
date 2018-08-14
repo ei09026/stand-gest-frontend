@@ -323,7 +323,7 @@
                                     "id": 7,
                                     "internalDescription":"Vehicles",
                                     "parentMenuId":null,
-                                    "router":null,
+                                    "router":"/vehicles",
                                     "i18N":"side-menu.vehicles",
                                     "icon":"fa-car",
                                     "rank":10,

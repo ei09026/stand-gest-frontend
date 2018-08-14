@@ -138,39 +138,7 @@
                 v-if="userDto">
 
                 <div class="row">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label>Nome</label>
-
-                            <input class="form-control"
-                                v-model="userDto.name"
-                                placeholder="Nome">
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label>Email</label>
-
-                            <input class="form-control"
-                                v-model="userDto.email"
-                                placeholder="Email">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label>Utilizador</label>
-
-                            <input class="form-control"
-                                v-model="userDto.username"
-                                placeholder="Utilizador">
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6">
+                    <div v-if="!userDto.picture" class="col-lg-6">
                         <div class="form-group">
                             <label>Foto</label>
 
@@ -180,6 +148,54 @@
                                 @change="uploadPicture" />                          
                         </div>
                     </div>
+
+                    <div v-if="userDto.picture" class="col-lg-6">
+                        <div class="col-lg-2">
+                            <img :src="userDto.picture" class="img-circle img-width-md"></img>
+                        </div>
+                        <div class="col-lg-10">
+                            <div class="form-group">
+                                <label>Foto</label>
+
+                                <input type="file" 
+                                    class="hidden-input"
+                                    ref="uploadPicture"
+                                    @change="uploadPicture" />                          
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Nome</label>
+
+                            <input class="form-control"
+                                v-model="userDto.name"
+                                placeholder="Nome">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Email</label>
+
+                            <input class="form-control"
+                                v-model="userDto.email"
+                                placeholder="Email">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Utilizador</label>
+
+                            <input class="form-control"
+                                v-model="userDto.username"
+                                placeholder="Utilizador">
+                        </div>
+                    </div>                                       
                 </div>
 
                 <div class="row">
@@ -475,6 +491,8 @@
                 if (user) {
                     Object.assign(userDto, user)
 
+                    userDto.passwordConfirmation = userDto.password
+
                     if (user.deleted_at) {
                         userDto.active = false
                     }
@@ -587,5 +605,10 @@
     .img-width {
         width: 28px;
         height: 28px;
+    }
+
+    .img-width-md {
+        width: 65px;
+        height: 65px;
     }
 </style>
