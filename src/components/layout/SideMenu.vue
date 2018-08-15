@@ -308,10 +308,10 @@
                                 },
                                 {
                                     "id": 6,
-                                    "internalDescription":"categories",
+                                    "internalDescription":"extras",
                                     "parentMenuId": 2,
-                                    "router": "/configurations/categories",
-                                    "i18N":"side-menu.categories",
+                                    "router": "/configurations/extras",
+                                    "i18N":"side-menu.extras",
                                     "icon":null,
                                     "rank": 40,
                                     "slug":null,

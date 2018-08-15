@@ -3,6 +3,7 @@ import Checklists from '@/components/configurations/Checklists'
 import Brands from '@/components/configurations/Brands'
 import FuelTypes from '@/components/configurations/FuelTypes'
 import Users from '@/components/configurations/Users'
+import Extras from '@/components/configurations/Extras'
 
 let routes = [
     {
@@ -24,6 +25,10 @@ let routes = [
     {
         path: '/configurations/fuel-types',
         component: FuelTypes
+    },
+    {
+        path: '/configurations/extras',
+        component: Extras
     }
 ]
 
