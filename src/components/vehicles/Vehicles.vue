@@ -84,23 +84,30 @@
                 v-if="vehicleDto">
 
                 <div class="row">
-                    <div class="col-md-6 col-lg-11">
+                    <div class="col-lg-4">
                         <div class="form-group">
-                            <label>Descrição</label>
+                            <label>Matrícula</label>
 
-                            <input id="itemDescription" class="form-control"
-                                v-model="vehicleDto.description"
-                                placeholder="Descrição">
+                            <masked-input class="form-control" 
+                                v-model="vehicleDto.plate" 
+                                mask="##-##-##" 
+                                placeholder="Matrícula" />
                         </div>
                     </div>
 
-                    <div class="col-md-1 col-lg-1">
+                    <div class="col-lg-4">
                         <div class="form-group">
-                            <label>Activo</label>
+                            <label>Marca</label>
 
-                            <check-item
-                                v-model="vehicleDto.active">
-                            </check-item>
+                            <multiselect
+                                v-model="vehicleDto.plateId"
+                                :options="brands"
+                                :searchable="true"
+                                :multiple="false"
+                                :no-results-label="$i18n.t('general.no-results')"
+                                track-by="id"
+                                label="description"
+                            ></multiselect>
                         </div>
                     </div>
                 </div>
@@ -128,6 +135,7 @@
     import RadioItem from '@/components/shared/input/RadioItem'
     import Multiselect from '@/components/shared/multi-select'
     import vehicleService from '@/services/vehicles/vehicle.service'
+    import brandService from '@/services/brands/brand.service'
     import PageHeader from '@/components/layout/PageHeader'
     import ButtonBar from '@/components/shared/ButtonBar'
     import Modal from '@/components/shared/Modal'
@@ -379,6 +387,27 @@
                     self.closeVehicleManagement()
                     self.loadingRemove('configurations-saving-vehicle')
                 })
+            },
+
+            fetchBrands () {
+                let self = this
+
+                self.loadingAdd('configurations-fetching-brands')
+
+                let parameters = {
+                    method: 'retrieve'
+                }
+
+                return brandService.retrieve(parameters).then(response => {
+                    if (response.data.status === 'success') {
+                        debugger
+                        self.brands = response.data.data
+                    }
+
+                    self.loadingRemove('configurations-fetching-brands')
+                }).catch(exception => {
+                    throw exception
+                })
             }
         },
 
@@ -390,6 +419,9 @@
 
         created () {
             this.fetchVehicles()
+
+            // Catalogs
+            this.fetchBrands()
         }
     }
 

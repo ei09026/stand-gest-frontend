@@ -144,7 +144,6 @@
     import toastrService from '@/services/shared/toastr.service'
     import IdtTable from '@/components/shared/IdtTable/IdtTable'
     import RadioItem from '@/components/shared/input/RadioItem'
-    import Multiselect from '@/components/shared/multi-select'
     import brandService from '@/services/brands/brand.service'
     import PageHeader from '@/components/layout/PageHeader'
     import ButtonBar from '@/components/shared/ButtonBar'
@@ -163,7 +162,6 @@
             Modal,
             IdtTable,
             CheckItem,
-            Multiselect,
             RadioItem
         },
 
