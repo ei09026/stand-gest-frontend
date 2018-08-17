@@ -4,6 +4,7 @@ import Brands from '@/components/configurations/Brands'
 import FuelTypes from '@/components/configurations/FuelTypes'
 import Users from '@/components/configurations/Users'
 import Extras from '@/components/configurations/Extras'
+import Colors from '@/components/configurations/Colors'
 
 let routes = [
     {
@@ -29,6 +30,10 @@ let routes = [
     {
         path: '/configurations/extras',
         component: Extras
+    },
+    {
+        path: '/configurations/colors',
+        component: Colors
     }
 ]
 

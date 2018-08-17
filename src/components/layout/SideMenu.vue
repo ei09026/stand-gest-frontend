@@ -321,6 +321,19 @@
                                 },
                                 {
                                     "id": 7,
+                                    "internalDescription":"colors",
+                                    "parentMenuId": 2,
+                                    "router": "/configurations/colors",
+                                    "i18N":"side-menu.colors",
+                                    "icon":null,
+                                    "rank": 50,
+                                    "slug":null,
+                                    "level": 2,
+                                    "permission":null,
+                                    "enabled":"True"
+                                },
+                                {
+                                    "id": 8,
                                     "internalDescription":"Vehicles",
                                     "parentMenuId":null,
                                     "router":"/vehicles",
@@ -333,7 +346,7 @@
                                     "enabled":"True"
                                 },
                                 {
-                                    "id": 8,
+                                    "id": 9,
                                     "internalDescription":"Clients",
                                     "parentMenuId":null,
                                     "router":null,
@@ -346,7 +359,7 @@
                                     "enabled":"True"
                                 },
                                 {
-                                    "id": 9,
+                                    "id": 10,
                                     "internalDescription":"Negotiations",
                                     "parentMenuId":null,
                                     "router":null,
