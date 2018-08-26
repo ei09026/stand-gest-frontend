@@ -4,7 +4,7 @@
 let currencyService = {
     currencyDefaults: {
         currency: {
-            symbol: 'AOA' // TODO: Load from configuration
+            symbol: '€' // TODO: Load from configuration
         },
         decimalSeparator: ',',
         thousandsSeparator: '.',

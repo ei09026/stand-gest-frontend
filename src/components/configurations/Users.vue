@@ -554,7 +554,6 @@
                 };
 
                 return request.then(response => {
-                    debugger;
                     if (response.data.status === 'success') {
                         toastrService.success(
                             self.$i18n.t('general.success'),

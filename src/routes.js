@@ -1,13 +1,17 @@
 ﻿// Import routes
 import coreRoutes from '@/routes/core.route'
 import configurations from '@/routes/configurations.route'
+import clients from '@/routes/clients.route'
 import vehicles from '@/routes/vehicles.route'
+import negotiations from '@/routes/negotiations.route'
 
 // Register imported routes
 let routes = [
     coreRoutes,
     configurations,
-    vehicles
+    clients,
+    vehicles,
+    negotiations
 ]
 
 /*** Do not modify below this line ***/

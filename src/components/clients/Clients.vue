@@ -13,60 +13,42 @@
             :columns="columns"
             column-key="name"
             column-label="title"
-            :rows="brands"
+            :rows="vehicles"
             row-key="id"
             :search="filter.description"
             :search-placeholder="searchPlaceholder"
             :unorderable-columns="['active']"
             :orderBy="orderBy"
-            :loading="isFetchingBrands"
+            :loading="isFetchingVehicles"
             :pagination="pagination"
             :has-filtered-results="hasFilteredResults"
             @search="search"
             @order="order"
-            @row-clicked="openBrandManagement"
-            @filter="fetchBrands"
+            @row-clicked="openVehicleManagement"
+            @filter="fetchVehicles"
             @filter-clear="clearFilter"
-            @refresh="fetchBrands"
+            @refresh="fetchVehicles"
             @page-changed="pageChanged">
 
             <template slot="filter">
                 <div class="row">
                     <div class="col-lg-4 m-b-sm">
-                        <label>{{$i18n.tc('general.active', 2)}}</label>
+                        <label>Matrícula</label>
 
-                        <div>
-                            <div class="btn-group">
-                                <radio-item
-                                    button
-                                    :val="null"
-                                    v-model="filter.active">
-
-                                    {{ $i18n.t('general.all') }}
-                                </radio-item>
-
-                                <radio-item class="m-l-sm"
-                                    button
-                                    :val="true"
-                                    v-model="filter.active">
-
-                                    <i class="fas fa-check"></i>
-
-                                    {{ $i18n.tc('general.active', 2) }}
-                                </radio-item>
-
-                                <radio-item class="m-l-sm"
-                                    button
-                                    :val="false"
-                                    v-model="filter.active">
-
-                                    <i class="fas fa-ban"></i>
-
-                                    {{ $i18n.tc('general.inactive', 2) }}
-                                </radio-item>
-                            </div>
+                        <div>                          
+                            <masked-input class="form-control" v-model="filter.plate" mask="##-##-##" placeholder="Matrícula" />
                         </div>
                     </div>
+
+                    <div class="col-lg-4 m-b-sm">
+                        <label>Marca</label>
+
+                        <div>
+                            <input class="form-control"
+                                v-model="filter.brandId"
+                                placeholder="Marca">
+                        </div>
+                    </div>  
                 </div>
             </template>
 
@@ -91,34 +73,41 @@
         </idt-table>
 
         <modal xl
-            :show="showBrandManagementModal"
-            :title="brandManagementModalTitle"
+            :show="showVehicleManagementModal"
+            :title="vehicleManagementModalTitle"
             :ok-text="$i18n.t('actions.save')"
-            :ok-button-disabled="!isBrandManagementValid"
+            :ok-button-disabled="!isVehicleManagementValid"
             @ok="save"
-            @close="closeBrandManagement">
+            @close="closeVehicleManagement">
 
             <template
-                v-if="brandDto">
+                v-if="vehicleDto">
 
                 <div class="row">
-                    <div class="col-md-6 col-lg-11">
+                    <div class="col-lg-4">
                         <div class="form-group">
-                            <label>Descrição</label>
+                            <label>Matrícula</label>
 
-                            <input id="itemDescription" class="form-control"
-                                v-model="brandDto.description"
-                                placeholder="Descrição">
+                            <masked-input class="form-control" 
+                                v-model="vehicleDto.plate" 
+                                mask="##-##-##" 
+                                placeholder="Matrícula" />
                         </div>
                     </div>
 
-                    <div class="col-md-1 col-lg-1">
+                    <div class="col-lg-4">
                         <div class="form-group">
-                            <label>Activo</label>
+                            <label>Marca</label>
 
-                            <check-item
-                                v-model="brandDto.active">
-                            </check-item>
+                            <multiselect
+                                v-model="vehicleDto.plateId"
+                                :options="brands"
+                                :searchable="true"
+                                :multiple="false"
+                                :no-results-label="$i18n.t('general.no-results')"
+                                track-by="id"
+                                label="description"
+                            ></multiselect>
                         </div>
                     </div>
                 </div>
@@ -128,7 +117,7 @@
         <button-bar>
             <button class="btn btn-circle btn-primary"
                 v-tooltip="{title: $i18n.t('actions.add')}"
-                @click="openBrandManagement()">
+                @click="openVehicleManagement()">
 
                 <i class="fa fa-plus"></i>
             </button>
@@ -144,12 +133,15 @@
     import toastrService from '@/services/shared/toastr.service'
     import IdtTable from '@/components/shared/IdtTable/IdtTable'
     import RadioItem from '@/components/shared/input/RadioItem'
+    import Multiselect from '@/components/shared/multi-select'
+    import vehicleService from '@/services/vehicles/vehicle.service'
     import brandService from '@/services/brands/brand.service'
     import PageHeader from '@/components/layout/PageHeader'
     import ButtonBar from '@/components/shared/ButtonBar'
     import Modal from '@/components/shared/Modal'
     import tooltip from '@/directives/tooltip'
     import {mapGetters, mapActions} from 'vuex'
+    import MaskedInput from 'vue-masked-input'
 
     export default {
         directives: {
@@ -162,24 +154,20 @@
             Modal,
             IdtTable,
             CheckItem,
-            RadioItem
+            Multiselect,
+            RadioItem,
+            MaskedInput
         },
 
         data () {
             return {
-                title: 'Marcas',
+                title: 'Clientes',
 
-                newItem: null,
-
-                isSavingNewItem: false,
-
-                brands: [],
-
-                checklistItems: [],
+                vehicles: [],
 
                 filter: {
-                    description: '',
-                    active: null
+                    plate: '',
+                    brandId: null
                 },
 
                 pagination: {
@@ -189,24 +177,24 @@
                 },
 
                 orderBy: {
-                    column: 'description',
+                    column: 'purchase_date',
                     direction: 'asc'
                 },
 
                 columns: [
                     {
-                        name: 'description',
-                        title: 'Descrição'
+                        name: 'plate',
+                        title: 'Matrícula'
                     },
                     {
-                        name: 'deleted_at',
-                        title: 'Activo'
+                        name: 'brand',
+                        title: 'Marca'
                     }
                 ],
 
-                showBrandManagementModal: false,
+                showVehicleManagementModal: false,
 
-                brandDto: null
+                vehicleDto: null
             }
         },
 
@@ -216,8 +204,8 @@
                 'pageContentSize'
             ]),
 
-            isFetchingBrands () {
-                return this.loadings.indexOf('configurations-fetching-brands') >= 0
+            isFetchingVehicles () {
+                return this.loadings.indexOf('configurations-fetching-vehicles') >= 0
             },
 
             hasFilteredResults () {
@@ -232,17 +220,17 @@
                 return placeholder.charAt(0).toUpperCase() + placeholder.slice(1).toLowerCase()
             },
 
-            isBrandManagementValid () {
-                return !!(this.brandDto &&
-                    this.brandDto.description && !this.newItem)
+            isVehicleManagementValid () {
+                return !!(this.vehicleDto &&
+                    this.vehicleDto.description && !this.newItem)
             },
 
-            brandManagementModalTitle () {
-                if (!this.brandDto) {
+            vehicleManagementModalTitle () {
+                if (!this.vehicleDto) {
                     return null
                 }
 
-                return this.brandDto.id
+                return this.vehicleDto.id
                     ? 'Editar marca'
                     : 'Nova marca'
             },
@@ -260,13 +248,13 @@
 
             pageChanged (page) {
                 this.pagination.page = page
-                this.fetchBrands();
+                this.fetchVehicles();
             },
 
-            fetchBrands () {
+            fetchVehicles () {
                 let self = this
 
-                self.loadingAdd('configurations-fetching-brands')
+                self.loadingAdd('configurations-fetching-vehicles')
 
                 let parameters = {
                     filter: self.filter,
@@ -275,15 +263,15 @@
                     method: 'retrieve'
                 }
 
-                return brandService.retrieve(parameters).then(response => {
+                return vehicleService.retrieve(parameters).then(response => {
                     if (response.data.status === 'success') {
-                        self.brands = response.data.data.data
+                        self.vehicles = response.data.data.data
                         self.pagination.totalItems = response.data.data.total
                     } else {
                         // TODO
                     }
 
-                    self.loadingRemove('configurations-fetching-brands')
+                    self.loadingRemove('configurations-fetching-vehicles')
                 }).catch(exception => {
                     throw exception
                 })
@@ -292,82 +280,82 @@
             search (value) {
                 this.filter.description = value
 
-                this.fetchBrands()
+                this.fetchVehicles()
             },
 
             order (orderBy) {
                 this.orderBy = orderBy
 
-                this.fetchBrands()
+                this.fetchVehicles()
             },
 
             clearFilter () {
                 this.filter.description = ''
                 this.filter.active = null
 
-                this.fetchBrands()
+                this.fetchVehicles()
             },
 
-            openBrandManagement (brand) {
-                let brandDto = {
+            openVehicleManagement (vehicle) {
+                let vehicleDto = {
                     id: null,
                     description: '',
                     active: true
                 }
 
                 // Edit
-                if (brand) {
-                    Object.assign(brandDto, brand)
+                if (vehicle) {
+                    Object.assign(vehicleDto, vehicle)
 
-                    if (brand.deleted_at) {
-                        brandDto.active = false
+                    if (vehicle.deleted_at) {
+                        vehicleDto.active = false
                     }
                     // fetch models this.fetchChecklistItems(editingChecklists.id)
                 } else {
-                    //brand models  this.checklistItems = []
+                    //vehicle models  this.checklistItems = []
                 }
 
-                this.brandDto = brandDto
-                this.showBrandManagementModal = true
+                this.vehicleDto = vehicleDto
+                this.showVehicleManagementModal = true
             },
 
-            closeBrandManagement () {
-                this.showBrandManagementModal = false
-                this.brandDto = null
+            closeVehicleManagement () {
+                this.showVehicleManagementModal = false
+                this.vehicleDto = null
                 this.newItem = null
             },
 
             save () {
                 let self = this
 
-                self.loadingAdd('configurations-saving-brand')
+                self.loadingAdd('configurations-saving-vehicle')
 
                 let parameters = {}
-                let request = null                
+                let request = null
                 
-                if (self.brandDto.id) { // Edit
+                if (self.vehicleDto.id) { // Edit
                     parameters = {
                         data: {
-                            description: self.brandDto.description,
-                            active: self.brandDto.active
+                            description: self.vehicleDto.description,
+                            active: self.vehicleDto.active
                         },
                         filter: {
-                            id: self.brandDto.id
+                            id: self.vehicleDto.id
                         },
                         method: 'update'
                     }
 
-                    request = brandService.update(parameters)
+                    request = vehicleService.update(parameters)
                 } else { // New
                     parameters = {
                         data: {
-                            description: self.brandDto.description,
-                            active: self.brandDto.active
+                            description: self.vehicleDto.description,
+                            active: self.vehicleDto.active
                         },
                         method: 'create'
                     }
 
-                    request = brandService.create(parameters)
+                    request = vehicleService.create(parameters)
                 };
 
                 return request.then(response => {
@@ -378,7 +366,7 @@
                             {positionClass: 'login-toast-top-right'}
                         )
 
-                        self.fetchBrands()
+                        self.fetchVehicles()
                     } else {
                         //TODO
                         toastrService.error(
@@ -387,26 +375,49 @@
                         {positionClass: 'login-toast-top-right'})
                     }
 
-                    self.loadingRemove('configurations-saving-brand')
+                    self.loadingRemove('configurations-saving-vehicle')
                 }).catch((error) => {
                     toastrService.error(
                         self.$i18n.t('general.error'),
                         self.$i18n.t('general.error'),
                         {positionClass: 'login-toast-top-right'})
                 }).finally(() => {
-                    self.closeBrandManagement()
-                    self.loadingRemove('configurations-saving-brand')
+                    self.closeVehicleManagement()
+                    self.loadingRemove('configurations-saving-vehicle')
+                })
+            },
+
+            fetchBrands () {
+                let self = this
+
+                self.loadingAdd('configurations-fetching-brands')
+
+                let parameters = {
+                    method: 'retrieve'
+                }
+
+                return brandService.retrieve(parameters).then(response => {
+                    if (response.data.status === 'success') {                        
+                        self.brands = response.data.data
+                    }
+
+                    self.loadingRemove('configurations-fetching-brands')
+                }).catch(exception => {
+                    throw exception
                 })
             }
         },
 
         watch: {
             'filter.active' () {
-                this.fetchBrands()
+                this.fetchVehicles()
             }
         },
 
         created () {
+            this.fetchVehicles()
+
+            // Catalogs
             this.fetchBrands()
         }
     }

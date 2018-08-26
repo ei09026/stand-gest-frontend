@@ -161,7 +161,7 @@
 
         data () {
             return {
-                title: 'Marcas',
+                title: 'Veículos',
 
                 vehicles: [],
 
@@ -333,8 +333,6 @@
                 let parameters = {}
                 let request = null
                 
-                debugger;
-                
                 if (self.vehicleDto.id) { // Edit
                     parameters = {
                         data: {
@@ -399,8 +397,7 @@
                 }
 
                 return brandService.retrieve(parameters).then(response => {
-                    if (response.data.status === 'success') {
-                        debugger
+                    if (response.data.status === 'success') {                        
                         self.brands = response.data.data
                     }
 

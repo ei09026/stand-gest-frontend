@@ -14,11 +14,15 @@ import configService from '@/services/shared/config.service'
 import transService from '@/services/shared/trans.service'
 import authService from '@/services/shared/auth.service'
 import domService from '@/services/shared/dom.service'
+import VueLazyLoad from 'vue-lazyload'
+import money from 'v-money'
 
 // We want to apply VueAxios and VueI18n
 // to our Vue instance
 Vue.use(VueAxios, axios)
 Vue.use(VueI18n)
+Vue.use(VueLazyLoad)
+Vue.use(money, {precision: 4})
 
 var app = null
 var i18n = new VueI18n()
